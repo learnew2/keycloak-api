@@ -20,9 +20,20 @@ instance FromJSON RealmRole where
     <*> v .: "name"
     <*> v .:? "description" .!= ""
 
+instance ToJSON RealmRole where
+  toJSON (RealmRole { .. }) = object
+    [ "id" .= roleId
+    , "name" .= roleName
+    , "description" .= roleDescription
+    ]
+
 data RoleCreateRequest = RoleCreateRequest
   { reqRoleName :: !Text
   } deriving (Show, Eq)
+
+instance FromJSON RoleCreateRequest where
+  parseJSON = withObject "RoleCreateRequest" $ \v -> RoleCreateRequest
+    <$> v .: "name"
 
 instance ToJSON RoleCreateRequest where
   toJSON (RoleCreateRequest { .. }) = object ["name" .= String reqRoleName]

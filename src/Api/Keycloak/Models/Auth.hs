@@ -7,6 +7,7 @@ module Api.Keycloak.Models.Auth
   , generateAuthUrlFromString
   ) where
 
+import           Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import           Data.Functor               ((<&>))
 import qualified Data.HashMap.Strict        as M
@@ -19,6 +20,19 @@ data AuthPayload = OpenIDCode
   , reqRedirectUri :: !Text
   , reqClientID    :: !Text
   } deriving Show
+
+instance ToJSON AuthPayload where
+  toJSON (OpenIDCode { .. }) = object
+    [ "state" .= reqState
+    , "redirect_uri" .= reqRedirectUri
+    , "client_id" .= reqClientID
+    ]
+
+instance FromJSON AuthPayload where
+  parseJSON = withObject "AuthPayload" $ \v -> OpenIDCode
+    <$> v .: "state"
+    <*> v .: "redirect_uri"
+    <*> v .: "client_id"
 
 instance ToForm AuthPayload where
   toForm (OpenIDCode { .. }) = (Form . M.fromList) $

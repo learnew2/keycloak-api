@@ -18,6 +18,19 @@ data IntrospectRequest = IntrospectRequest
   , reqClientSecret :: !Text
   } deriving Show
 
+instance FromJSON IntrospectRequest where
+  parseJSON = withObject "IntrospectRequest" $ \v -> IntrospectRequest
+    <$> v .: "token"
+    <*> v .: "client_id"
+    <*> v .: "client_secret"
+
+instance ToJSON IntrospectRequest where
+  toJSON (IntrospectRequest { .. }) = object
+    [ "token" .= reqToken
+    , "client_id" .= reqClientID
+    , "client_secret" .= reqClientSecret
+    ]
+
 instance ToForm IntrospectRequest where
   toForm (IntrospectRequest { .. }) =
     [ ("token", toQueryParam reqToken)
