@@ -8,13 +8,14 @@ module Api.Keycloak.Models.Introspect
 
 import           Data.Aeson
 import qualified Data.Aeson.KeyMap  as KM
+import           Data.Text          (Text)
 import           Web.FormUrlEncoded
 import           Web.HttpApiData
 
 data IntrospectRequest = IntrospectRequest
-  { reqToken        :: !String
-  , reqClientID     :: !String
-  , reqClientSecret :: !String
+  { reqToken        :: !Text
+  , reqClientID     :: !Text
+  , reqClientSecret :: !Text
   } deriving Show
 
 instance ToForm IntrospectRequest where
@@ -26,13 +27,13 @@ instance ToForm IntrospectRequest where
 
 data IntrospectResponse = InactiveToken |
   ActiveToken
-  { tokenRealmRoles        :: ![String]
-  , tokenAccountRoles      :: ![String]
-  , tokenScope             :: !String
-  , tokenUsername          :: !String
-  , tokenPreferredUsername :: !String
-  , tokenName              :: !(Maybe String)
-  , tokenEmail             :: !(Maybe String)
+  { tokenRealmRoles        :: ![Text]
+  , tokenAccountRoles      :: ![Text]
+  , tokenScope             :: !Text
+  , tokenUsername          :: !Text
+  , tokenPreferredUsername :: !Text
+  , tokenName              :: !(Maybe Text)
+  , tokenEmail             :: !(Maybe Text)
   } deriving Show
 
 instance FromJSON IntrospectResponse where
