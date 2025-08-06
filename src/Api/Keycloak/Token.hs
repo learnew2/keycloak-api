@@ -2,6 +2,7 @@
 module Api.Keycloak.Token
   ( TokenVariableFunctions(..)
   , TokenVariable
+  , HasTokenVariable
   , createTokenVar
   , withTokenVariable
   ) where
