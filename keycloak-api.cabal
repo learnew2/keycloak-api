@@ -29,9 +29,11 @@ library
       Api.Keycloak.Client
       Api.Keycloak.Models
       Api.Keycloak.Models.Auth
+      Api.Keycloak.Models.Group
       Api.Keycloak.Models.Introspect
       Api.Keycloak.Models.Role
       Api.Keycloak.Models.Token
+      Api.Keycloak.Models.User
       Api.Keycloak.Token
   other-modules:
       Paths_keycloak_api
