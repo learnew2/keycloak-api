@@ -5,13 +5,21 @@ module Api.Keycloak.Client
   , getRealmRoles
   , createRealmRole
   , deleteRealmRole
+  , getRealmGroups
+  , getRealmGroups'
+  , getAllRealmGroups
+  , getGroupMembers
+  , getGroupMembers'
+  , getAllGroupMembers
   ) where
 
 import           Api.Keycloak
 import           Api.Keycloak.Models
+import           Api.Keycloak.Models.Group
 import           Api.Keycloak.Models.Introspect
 import           Api.Keycloak.Models.Role
 import           Api.Keycloak.Models.Token
+import           Api.Keycloak.Models.User
 import           Control.Monad.Except           (throwError)
 import           Control.Monad.IO.Class
 import           Control.Monad.Reader
@@ -34,7 +42,9 @@ validateToken
   :<|> grantToken
   :<|> getRealmRoles
   :<|> createRealmRole'
-  :<|> deleteRealmRole' = client api
+  :<|> deleteRealmRole'
+  :<|> getRealmGroups'
+  :<|> getGroupMembers' = client api
 
 noContentStatusWrapper :: ClientM a -> ClientM ()
 noContentStatusWrapper req = do
@@ -46,6 +56,30 @@ noContentStatusWrapper req = do
       let stCode = statusCode status
       if stCode >= 200 && stCode < 300 then pure () else throwError exception
     (Left otherException) -> throwError otherException
+
+getRealmGroups :: Text -> Int -> ClientM [FoundGroup]
+getRealmGroups realmName pageNumber = do
+  getRealmGroups' realmName (Just $ 100 * (pageNumber - 1)) (Just 100)
+
+getAllRealmGroups :: Text -> ClientM [FoundGroup]
+getAllRealmGroups realmName = let
+  helper :: [FoundGroup] -> Int -> ClientM [FoundGroup]
+  helper acc pageNumber = do
+    groups <- getRealmGroups realmName pageNumber
+    if null groups then pure acc else helper (acc ++ groups) (pageNumber + 1)
+  in helper [] 1
+
+getGroupMembers :: Text -> Text -> Int -> ClientM [BriefUser]
+getGroupMembers realmName group pageNumber = do
+  getGroupMembers' realmName group (Just True) (Just $ 100 * (pageNumber - 1)) (Just 100)
+
+getAllGroupMembers :: Text -> Text -> ClientM [BriefUser]
+getAllGroupMembers realmName group = let
+  helper :: [BriefUser] -> Int -> ClientM [BriefUser]
+  helper acc pageNumber = do
+    users <- getGroupMembers realmName group pageNumber
+    if null users then pure acc else helper (acc ++ users) (pageNumber + 1)
+  in helper [] 1
 
 createRealmRole realm token req = do
   noContentStatusWrapper (createRealmRole' realm token req)
