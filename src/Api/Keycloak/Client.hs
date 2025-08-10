@@ -57,27 +57,27 @@ noContentStatusWrapper req = do
       if stCode >= 200 && stCode < 300 then pure () else throwError exception
     (Left otherException) -> throwError otherException
 
-getRealmGroups :: Text -> Int -> ClientM [FoundGroup]
+getRealmGroups :: Text -> Int -> BearerWrapper -> ClientM [FoundGroup]
 getRealmGroups realmName pageNumber = do
   getRealmGroups' realmName (Just $ 100 * (pageNumber - 1)) (Just 100)
 
-getAllRealmGroups :: Text -> ClientM [FoundGroup]
-getAllRealmGroups realmName = let
+getAllRealmGroups :: Text -> BearerWrapper -> ClientM [FoundGroup]
+getAllRealmGroups realmName token = let
   helper :: [FoundGroup] -> Int -> ClientM [FoundGroup]
   helper acc pageNumber = do
-    groups <- getRealmGroups realmName pageNumber
+    groups <- getRealmGroups realmName pageNumber token
     if null groups then pure acc else helper (acc ++ groups) (pageNumber + 1)
   in helper [] 1
 
-getGroupMembers :: Text -> Text -> Int -> ClientM [BriefUser]
+getGroupMembers :: Text -> Text -> Int -> BearerWrapper -> ClientM [BriefUser]
 getGroupMembers realmName group pageNumber = do
   getGroupMembers' realmName group (Just True) (Just $ 100 * (pageNumber - 1)) (Just 100)
 
-getAllGroupMembers :: Text -> Text -> ClientM [BriefUser]
-getAllGroupMembers realmName group = let
+getAllGroupMembers :: Text -> Text -> BearerWrapper -> ClientM [BriefUser]
+getAllGroupMembers realmName group token = let
   helper :: [BriefUser] -> Int -> ClientM [BriefUser]
   helper acc pageNumber = do
-    users <- getGroupMembers realmName group pageNumber
+    users <- getGroupMembers realmName group pageNumber token
     if null users then pure acc else helper (acc ++ users) (pageNumber + 1)
   in helper [] 1
 

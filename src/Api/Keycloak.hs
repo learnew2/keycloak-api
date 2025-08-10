@@ -26,5 +26,5 @@ type KeycloakAPI = "realms" :> RealmCapture :> "protocol" :> "openid-connect" :>
   :<|> "admin" :> "realms" :> RealmCapture :> "roles" :> AuthHeader :> Get '[JSON] [RealmRole]
   :<|> "admin" :> "realms" :> RealmCapture :> "roles" :> AuthHeader :> ReqBody '[JSON] RoleCreateRequest :> Post '[JSON] ()
   :<|> "admin" :> "realms" :> RealmCapture :> "roles-by-id" :> RoleIDCapture :> AuthHeader :> Delete '[JSON] ()
-  :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> FirstParam :> MaxParam :> Get '[JSON] [FoundGroup]
-  :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> GroupIDCapture :> "members" :> BriefParam :> FirstParam :> MaxParam :> Get '[JSON] [BriefUser]
+  :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> FirstParam :> MaxParam :> AuthHeader :> Get '[JSON] [FoundGroup]
+  :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> GroupIDCapture :> "members" :> BriefParam :> FirstParam :> MaxParam :> AuthHeader :> Get '[JSON] [BriefUser]
