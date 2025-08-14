@@ -11,21 +11,21 @@ module Api.Keycloak.Token
 import           Control.Concurrent.STM
 import           Control.Monad.Reader
 
-data TokenVariableFunctions a m = TokenFunctions
-  { tokenValidateF :: a -> m Bool
-  , tokenIssueF    :: m (Either String a)
+data TokenVariableFunctions a = TokenFunctions
+  { tokenValidateF :: a -> IO Bool
+  , tokenIssueF    :: IO (Either String a)
   }
 
-class HasTokenVariable t a where
+class HasTokenVariable t where
   getTokenVariable :: t -> TokenVariable a
-  getTokenFunctions :: (Monad m) => t -> TokenVariableFunctions a m
+  getTokenFunctions :: t -> TokenVariableFunctions a
 
 type TokenVariable a = TVar (Maybe a)
 
 createTokenVar :: IO (TokenVariable a)
 createTokenVar = newTVarIO Nothing
 
-withTokenVariable :: (MonadIO m, HasTokenVariable t a, MonadReader t m) => (a -> m b) -> m (Either String b)
+withTokenVariable :: (MonadIO m, HasTokenVariable t, MonadReader t m) => (a -> m b) -> m (Either String b)
 withTokenVariable f = do
   (TokenFunctions validateToken issueToken) <- asks getTokenFunctions
   v <- asks getTokenVariable
