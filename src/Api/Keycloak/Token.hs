@@ -16,7 +16,7 @@ data TokenVariableFunctions a = TokenFunctions
   , tokenIssueF    :: IO (Either String a)
   }
 
-class HasTokenVariable t where
+class HasTokenVariable t a where
   getTokenVariable :: t -> TokenVariable a
   getTokenFunctions :: t -> TokenVariableFunctions a
 
@@ -25,7 +25,7 @@ type TokenVariable a = TVar (Maybe a)
 createTokenVar :: IO (TokenVariable a)
 createTokenVar = newTVarIO Nothing
 
-withTokenVariable :: (MonadIO m, HasTokenVariable t, MonadReader t m) => (a -> m b) -> m (Either String b)
+withTokenVariable :: (MonadIO m, HasTokenVariable t a, MonadReader t m) => (a -> m b) -> m (Either String b)
 withTokenVariable f = do
   (TokenFunctions validateToken issueToken) <- asks getTokenFunctions
   v <- asks getTokenVariable
