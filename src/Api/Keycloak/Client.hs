@@ -11,6 +11,8 @@ module Api.Keycloak.Client
   , getGroupMembers
   , getGroupMembers'
   , getAllGroupMembers
+  , getUserGroups
+  , getAllUserGroups
   ) where
 
 import           Api.Keycloak
@@ -44,7 +46,8 @@ validateToken
   :<|> createRealmRole'
   :<|> deleteRealmRole'
   :<|> getRealmGroups'
-  :<|> getGroupMembers' = client api
+  :<|> getGroupMembers'
+  :<|> getUserGroups' = client api
 
 noContentStatusWrapper :: ClientM a -> ClientM ()
 noContentStatusWrapper req = do
@@ -78,6 +81,17 @@ getAllGroupMembers realmName group token = let
   helper :: [BriefUser] -> Int -> ClientM [BriefUser]
   helper acc pageNumber = do
     users <- getGroupMembers realmName group pageNumber token
+    if null users then pure acc else helper (acc ++ users) (pageNumber + 1)
+  in helper [] 1
+
+getUserGroups :: Text -> Text -> Int -> BearerWrapper -> ClientM [FoundGroup]
+getUserGroups realmName user pageNumber = getUserGroups' realmName user (Just True) (Just $ 100 * (pageNumber - 1)) (Just 100)
+
+getAllUserGroups :: Text -> Text -> BearerWrapper -> ClientM [FoundGroup]
+getAllUserGroups realmName user token = let
+  helper :: [FoundGroup] -> Int -> ClientM [FoundGroup]
+  helper acc pageNumber = do
+    users <- getUserGroups realmName user pageNumber token
     if null users then pure acc else helper (acc ++ users) (pageNumber + 1)
   in helper [] 1
 

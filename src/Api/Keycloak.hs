@@ -16,6 +16,7 @@ import           Servant.API
 type RealmCapture = Capture "realm" Text
 type RoleIDCapture = Capture "roleId" Text
 type GroupIDCapture = Capture "groupId" Text
+type UserIDCapture = Capture "userId" Text
 type AuthHeader = Header' '[Required] "Authorization" BearerWrapper
 type FirstParam = QueryParam "first" Int
 type MaxParam = QueryParam "max" Int
@@ -28,3 +29,4 @@ type KeycloakAPI = "realms" :> RealmCapture :> "protocol" :> "openid-connect" :>
   :<|> "admin" :> "realms" :> RealmCapture :> "roles-by-id" :> RoleIDCapture :> AuthHeader :> Delete '[JSON] ()
   :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> FirstParam :> MaxParam :> AuthHeader :> Get '[JSON] [FoundGroup]
   :<|> "admin" :> "realms" :> RealmCapture :> "groups" :> GroupIDCapture :> "members" :> BriefParam :> FirstParam :> MaxParam :> AuthHeader :> Get '[JSON] [BriefUser]
+  :<|> "admin" :> "realms" :> RealmCapture :> "users" :> UserIDCapture :> "groups" :> BriefParam :> FirstParam :> MaxParam :> AuthHeader :> Get '[JSON] [FoundGroup]
