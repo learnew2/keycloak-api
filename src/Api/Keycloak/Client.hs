@@ -13,6 +13,7 @@ module Api.Keycloak.Client
   , getAllGroupMembers
   , getUserGroups
   , getAllUserGroups
+  , getUserBriefInfo
   ) where
 
 import           Api.Keycloak
@@ -47,7 +48,8 @@ validateToken
   :<|> deleteRealmRole'
   :<|> getRealmGroups'
   :<|> getGroupMembers'
-  :<|> getUserGroups' = client api
+  :<|> getUserGroups'
+  :<|> getUserBriefInfo = client api
 
 noContentStatusWrapper :: ClientM a -> ClientM ()
 noContentStatusWrapper req = do
